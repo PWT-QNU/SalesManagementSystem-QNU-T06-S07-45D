@@ -18,16 +18,23 @@
 
 /* 2. CẤU TRÚC CHÍNH */
 .sidebar {
+  /* --- THAY ĐỔI QUAN TRỌNG --- */
+  position: fixed; /* Cố định sidebar vào cửa sổ trình duyệt */
+  top: 0;
+  left: 0;
+  bottom: 0; /* Kéo dài từ trên xuống dưới cùng */
+  
+  /* Các thuộc tính cũ giữ nguyên */
   width: var(--sidebar-width);
-  height: 100%;
   background-color: var(--sidebar-bg);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
-  position: sticky;
-  top: 0;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', sans-serif;
+  z-index: 1000; /* Đảm bảo sidebar luôn nổi lên trên cùng */
+  
+  /* Xóa height: 100vh đi hoặc giữ lại cũng không sao vì đã có top/bottom: 0 */
 }
 
 /* 3. HEADER & LOGO */
