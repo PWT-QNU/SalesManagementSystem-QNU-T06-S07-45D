@@ -21,7 +21,7 @@ export const routes: Routes = [
       { path: 'product', component: Product},
 
       { path: 'sumInventory', component: SumInventoryComponent },
-      { path: 'inventory', component: Inventory}
+      { path: 'inventory', component: Inventory},
 
       { path: 'warehouse', component: WarehouseComponent}
 
