@@ -1,3 +1,4 @@
+/*sidebar-component.css*/
 /* 1. KHAI BÁO BIẾN (Variables) */
 :host {
   --sidebar-width: 260px;
@@ -12,7 +13,6 @@
   /* Đường viền: Màu trắng mờ để tiệp với nền sáng */
   --border-color: rgba(255, 255, 255, 0.2); 
 
-  display: flex;
   height: 100vh;
 }
 
@@ -24,10 +24,12 @@
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
   box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
   font-family: 'Segoe UI', sans-serif;
+  z-index: 1000;
 }
 
 /* 3. HEADER & LOGO */
