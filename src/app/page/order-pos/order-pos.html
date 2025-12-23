@@ -1,142 +1,165 @@
-<div class="body d-flex justify-content-between align-items-center p-3">
-  <h2 class="title" style="text-align: left;">Danh sách đơn hàng</h2>
-  <div class="d-flex gap-2 align-items-center">
-    <!-- Ô tìm kiếm + Nút tìm kiếm -->
-  </div>
-</div>
-<div class="input-group" style="width: 300px;padding-left: 15px">
-  <input
-  type="text"
-  class="form-control"
-  placeholder="Nhập tên khách hàng"
-  [(ngModel)]="searchTerm"
-  (keyup.enter)="search()"
-  style="height: 5vh; text-align: center; font-size: 1rem;"
->
-<button
-  class="btn btn-outline-primary"
-  (click)="search()"
-  style="height: 5vh; display: flex; align-items: center; justify-content: center;"
->
-  Tìm kiếm
-</button>
+<div class="order-page">
+  
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Danh sách đơn hàng</h2>
+      <p class="subtitle">Quản lý trạng thái và thanh toán đơn hàng</p>
+    </div>
 
-</div>
-<div class="table">
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th>STT</th>
-        <th>Mã khách hàng</th>
-        <th>Tên khách hàng</th>
-        <th>Ngày tạo</th>
-        <th>Phương thức thanh toán</th>
-        <th>Tổng tiền</th>
-        <th>Trạng thái</th>
-        <th>Thao tác</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let o of filteredOrders; index as i">
-        <td>{{ i + 1 }}</td>
-        <td>{{ o.customer.id }}</td>
-        <td>{{ o.customer.name }}</td>
-        <td>{{ o.orderDate ? (o.orderDate | date:'dd/MM/yyyy HH:mm:ss') : 'Ko có ngày tạo' }}</td>
-
-        <td>
-          <span *ngIf="o.status !== 'pending'">{{ selectedPaymentMethod | titlecase }}</span>
-          <span *ngIf="o.status === 'pending'">Chưa thanh toán</span>
-        </td>
-
-       <td>{{ o.totalAmount | number:'1.0-2' }} VND</td>
-
-
-
-        <td>
-          <span [ngClass]="{
-            'status-pending': o.status === 'pending',
-            'status-success': o.status === 'completed',
-            'status-cancel': o.status === 'cancelled'
-          }">
-            {{ o.status | titlecase }}
-          </span>
-        </td>
-        <td style="display: flex; gap: 10px;">
-          <button *ngIf="o.status === 'pending'"
-                  class="btn btn-success btn-sm"
-                  (click)="openPaymentModal(o)">
-            Thanh toán
-          </button>
-
-          <button class="btn btn-info btn-sm" (click)="openDetailModal(o)">
-            Chi tiết
-          </button>
-</td>
-
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Modal thanh toán -->
-<div class="modal" *ngIf="selectedOrder">
-  <div class="modal-content">
-    <h3>Xác nhận thanh toán</h3>
-    <p><strong>Khách hàng:</strong> {{ selectedOrder.customer.name }}</p>
-    <p><strong>Tổng tiền:</strong> {{ selectedOrder.totalAmount | number:'1.0-2' }} VND</p>
-
-    <label>Phương thức thanh toán:</label>
-    <select [(ngModel)]="selectedPaymentMethod" class="form-select mt-2">
-      <option value="cash">Tiền mặt</option>
-      <option value="bank_transfer">Chuyển khoản</option>
-      <option value="ewallet">Ví điện tử</option>
-    </select>
-
-    <div class="modal-actions mt-3 d-flex gap-2">
-      <button class="btn btn-secondary" (click)="closeModal()">Hủy</button>
-      <button class="btn btn-primary" (click)="confirmPayment()">Xác nhận</button>
+    <div class="header-right">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="search()"
+          placeholder="Tìm tên khách hàng..." 
+        />
+      </div>
+      <button class="btn btn-primary" (click)="search()">Tìm kiếm</button>
     </div>
   </div>
-</div>
 
-<!-- Modal xem chi tiết đơn hàng -->
-<div class="modal" *ngIf="selectedDetailOrder" >
-  <div class="modal-content">
-    <h3>Chi tiết đơn hàng</h3>
-    <p><strong>Khách hàng:</strong> {{ selectedDetailOrder.customer.name }}</p>
-    <p><strong>Trạng thái:</strong> {{ selectedDetailOrder.status | titlecase }}</p>
-
-    <!-- Sản phẩm trong đơn hiện tại -->
-    <h5>Sản phẩm trong đơn:</h5>
-    <table class="table mt-2">
+  <div class="table-container fade-in">
+    <table class="modern-table">
       <thead>
         <tr>
-          <th>STT</th>
-          <th>Sản phẩm</th>
-          <th>Loại</th>
-          <th>Số lượng</th>
-          <th>Đơn giá</th>
-          <th>Thành tiền</th>
+          <th style="width: 50px;">STT</th>
+          <th>Mã KH</th>
+          <th>Khách hàng</th>
+          <th>Ngày tạo</th>
+          <th>Phương thức</th>
+          <th>Tổng tiền</th>
+          <th style="text-align: center;">Trạng thái</th>
+          <th style="text-align: center;">Thao tác</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of selectedDetailOrder.items; index as i">
+        <tr *ngFor="let o of filteredOrders; index as i">
           <td>{{ i + 1 }}</td>
-          <td>{{ item.product.name }}</td>
-          <td>{{ item.product.category.name }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.product.price | number:'1.0-2' }} VND</td>
-          <td>{{ item.quantity * item.product.price | number:'1.0-2' }} VND</td>
+          <td><span class="code-badge">#{{ o.customer.id }}</span></td>
+          <td style="font-weight: 600;">{{ o.customer.name }}</td>
+          <td>{{ o.orderDate ? (o.orderDate | date:'dd/MM/yyyy HH:mm') : '---' }}</td>
+          
+          <td>
+            <span *ngIf="o.status !== 'pending'" class="payment-method">
+              {{ o.paymentMethod || 'Tiền mặt' | titlecase }}
+            </span>
+            <span *ngIf="o.status === 'pending'" style="color: #999; font-style: italic;">---</span>
+          </td>
 
+          <td class="price-text">{{ o.totalAmount | number:'1.0-0' }} đ</td>
+
+          <td style="text-align: center;">
+            <span class="status-badge" [ngClass]="getStatusClass(o.status)">
+              {{ o.status === 'pending' ? 'Chờ thanh toán' : (o.status | titlecase) }}
+            </span>
+          </td>
+
+          <td class="actions-cell">
+            <button *ngIf="o.status === 'pending'" 
+                    class="btn-icon pay" 
+                    (click)="openPaymentModal(o)" 
+                    title="Thanh toán">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            </button>
+
+            <button class="btn-icon detail" 
+                    (click)="openDetailModal(o)" 
+                    title="Chi tiết">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredOrders.length === 0">
+          <td colspan="8" class="empty-state">
+            <p>Không tìm thấy đơn hàng nào.</p>
+          </td>
         </tr>
       </tbody>
     </table>
+  </div>
 
-    <p class="mt-2"><strong>Tổng tiền đơn hiện tại:</strong> {{ selectedDetailOrder.totalAmount | number:'1.0-2'}} VND</p>
+  <div class="modal-overlay" *ngIf="selectedOrder" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Xác nhận thanh toán</h3>
+        <button class="close-btn" (click)="closeModal()">×</button>
+      </div>
 
-    <div class="modal-actions mt-3">
-      <button class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
+      <div class="modal-body">
+        <div class="info-row">
+          <label>Khách hàng:</label>
+          <span>{{ selectedOrder.customer.name }}</span>
+        </div>
+        <div class="info-row">
+          <label>Tổng tiền:</label>
+          <span class="price-highlight">{{ selectedOrder.totalAmount | number:'1.0-0' }} đ</span>
+        </div>
+
+        <div class="form-group mt-3">
+          <label>Phương thức thanh toán</label>
+          <select [(ngModel)]="selectedPaymentMethod">
+            <option value="cash">💵 Tiền mặt</option>
+            <option value="bank_transfer">🏦 Chuyển khoản ngân hàng</option>
+            <option value="ewallet">📱 Ví điện tử (Momo/ZaloPay)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Hủy</button>
+        <button class="btn btn-primary" (click)="confirmPayment()">Xác nhận thanh toán</button>
+      </div>
     </div>
   </div>
+
+  <div class="modal-overlay" *ngIf="selectedDetailOrder" (click)="closeDetailModal()">
+    <div class="modal-card lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Chi tiết đơn hàng #{{ selectedDetailOrder.id }}</h3>
+        <button class="close-btn" (click)="closeDetailModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="detail-info">
+          <p><strong>Khách hàng:</strong> {{ selectedDetailOrder.customer.name }}</p>
+          <p><strong>Trạng thái:</strong> <span class="status-badge" [ngClass]="getStatusClass(selectedDetailOrder.status)">{{ selectedDetailOrder.status }}</span></p>
+        </div>
+
+        <table class="detail-table">
+          <thead>
+            <tr>
+              <th>Sản phẩm</th>
+              <th>Đơn giá</th>
+              <th>SL</th>
+              <th>Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of selectedDetailOrder.items">
+              <td>
+                <div class="prod-name">{{ item.product.name }}</div>
+                <small class="prod-cat">{{ item.product.category.name }}</small>
+              </td>
+              <td>{{ item.product.price | number:'1.0-0' }}</td>
+              <td>x{{ item.quantity }}</td>
+              <td style="font-weight: bold;">{{ item.quantity * item.product.price | number:'1.0-0' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="total-summary">
+          <span>Tổng cộng:</span>
+          <span class="final-price">{{ selectedDetailOrder.totalAmount | number:'1.0-0' }} VND</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailModal()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
 </div>

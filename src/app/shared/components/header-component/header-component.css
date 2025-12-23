@@ -1,28 +1,186 @@
-.header {
+:host {
+  --primary-color: #7072F8; /* Màu chủ đạo lấy từ Sidebar */
+  --header-height: 70px;
+  --bg-color: #ffffff;
+  --text-color: #333;
+  --text-light: #888;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --border-radius: 10px;
+  
+  display: block;
+}
+
+.app-header {
+  height: var(--header-height);
+  background-color: var(--bg-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f5f5f5;
-  padding: 10px 20px;
+  padding: 0 30px;
+  box-shadow: var(--shadow); /* Tạo hiệu ứng nổi */
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Đè lên nội dung khi cuộn */
+}
 
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* --- LEFT: SEARCH BAR --- */
+.header-left {
+  flex: 1;
+}
 
-    input {
-      padding: 6px 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
+.search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
 
-    .btn-create {
-      background-color: #3eb34f;
-      border: none;
-      color: white;
-      padding: 6px 14px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-  }
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--text-light);
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 10px 15px 10px 45px; /* Chừa chỗ cho icon */
+  border: 1px solid #eee;
+  background-color: #f9f9f9;
+  border-radius: 50px; /* Bo tròn kiểu Pill */
+  font-size: 14px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.search-wrapper input:focus {
+  background-color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(112, 114, 248, 0.1); /* Hiệu ứng glow màu tím */
+}
+
+/* --- RIGHT: ACTIONS --- */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Icon Button (Notification) */
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  color: var(--text-light);
+  padding: 8px;
+  border-radius: 50%;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.action-btn:hover {
+  background-color: #f0f0f5;
+  color: var(--primary-color);
+}
+
+/* Chấm đỏ thông báo */
+.notification-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4757;
+  border-radius: 50%;
+  border: 2px solid #fff;
+}
+
+/* User Section */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 20px;
+  border-left: 1px solid #eee; /* Đường kẻ ngăn cách */
+}
+
+.user-info {
+  text-align: right;
+  line-height: 1.2;
+}
+
+.user-info .greeting {
+  display: block;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.user-info .name {
+  display: block;
+  font-weight: 700;
+  font-size: 14px;
+  color: #333;
+}
+
+.avatar-circle {
+  width: 40px;
+  height: 40px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(112, 114, 248, 0.3);
+}
+
+/* Logout Button styling */
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-light);
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  color: #ff4757; /* Màu đỏ khi hover */
+  background-color: #fff0f0;
+}
+.logout-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Login Button styling */
+.btn-login {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(112, 114, 248, 0.3);
+  transition: transform 0.2s;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
 }

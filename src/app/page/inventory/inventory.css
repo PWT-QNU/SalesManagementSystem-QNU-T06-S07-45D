@@ -1,0 +1,71 @@
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+.receipt {
+  padding: 10px;
+}
+
+.total {
+  margin: 10px 0;
+  font-weight: bold;
+}
+/* overlay toàn màn hình */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000; /* đảm bảo nổi trên mọi phần tử */
+}
+
+/* nội dung popup */
+.popup-content {
+  background: #fff;
+  padding: 20px;
+  width: 360px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* tuỳ chỉnh nút nếu cần */
+.popup-content .action {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.back-btn {
+  padding: 6px 14px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn:hover {
+  background: #0066d3;
+}

@@ -1,6 +1,47 @@
+/* main-layout.css */
+
+/* 1. Container tổng: Dùng Block bình thường, KHÔNG dùng Flex */
 .page {
-  display: flex;
+  display: block; 
+  position: relative;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden; /* Tránh thanh cuộn ngang */
 }
+
+/* 2. Phần khung bên phải: Đẩy sang trái để né Sidebar */
 .content {
-  flex: 1;
+  display: block; /* Đảm bảo là block */
+  margin-left: 260px; /* Bằng width sidebar */
+  width: calc(100% - 260px);
+  position: relative;
+  min-height: 100vh;
+}
+
+/* 3. Header cố định */
+app-header-component {
+  display: block; /* Đảm bảo component hiển thị dạng block */
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 260px; /* Bắt đầu từ sau Sidebar */
+  height: 70px;
+  z-index: 900;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Thêm bóng đổ nhẹ cho đẹp */
+}
+
+/* 4. Nội dung chính (Body) */
+.body {
+  display: fixed;
+  /* Đẩy nội dung xuống: 70px (Header) + 30px (Khoảng hở) = 100px */
+  padding-top: 100px; 
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-bottom: 30px;
+  
+  /* Đảm bảo nội dung chiếm hết chiều cao còn lại */
+  min-height: 100vh; 
+  box-sizing: border-box;
 }

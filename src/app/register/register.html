@@ -1,25 +1,62 @@
-<div class="register-container">
-  <h2>Register</h2>
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-
-    <div>
-      <label>Username</label>
-      <input type="text" formControlName="username">
+<div class="register-wrapper">
+  
+  <div class="register-card fade-in">
+    <div class="register-header">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+      </div>
+      <h2>Đăng ký tài khoản</h2>
+      <p>Tham gia hệ thống quản lý ngay hôm nay</p>
     </div>
 
-    <div>
-      <label>Password</label>
-      <input type="password" formControlName="password">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+
+      <div class="input-group">
+        <label>Tài khoản</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <input type="text" formControlName="username" placeholder="Chọn tên đăng nhập..."
+                 [class.invalid]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Họ và tên</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          <input type="text" formControlName="fullName" placeholder="Ví dụ: Nguyễn Văn A..."
+                 [class.invalid]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Mật khẩu</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input type="password" formControlName="password" placeholder="Nhập mật khẩu an toàn..."
+                 [class.invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="message-banner error">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="message-banner success">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        {{ successMessage }}
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid" class="btn-submit">
+        Đăng ký thành viên
+      </button>
+
+    </form>
+
+    <div class="register-footer">
+      <span>Đã có tài khoản? </span>
+      <a routerLink="/login">Đăng nhập tại đây</a>
     </div>
-
-    <div>
-      <label>Full Name</label>
-      <input type="text" formControlName="fullName">
-    </div>
-
-    <button type="submit" [disabled]="registerForm.invalid">Register</button>
-  </form>
-
-  <div *ngIf="errorMessage" style="color:red">{{ errorMessage }}</div>
-  <div *ngIf="successMessage" style="color:green">{{ successMessage }}</div>
+  </div>
 </div>
