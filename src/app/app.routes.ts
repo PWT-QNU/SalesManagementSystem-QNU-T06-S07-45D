@@ -10,13 +10,14 @@ import { Product } from './page/product/product';
 import { Inventory } from './page/inventory/inventory';
 import { SumInventoryComponent } from './page/sum-inventory/sum-inventory';
 import { WarehouseComponent } from './page/warehouse/warehouse';
+import { SuppliersComponent } from './page/suppliers/suppliers';
 export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
     children: [
       { path: 'order-pos', component: OrderPos },
-      { path: 'supplier', component: SupplierComponent },
+      { path: 'supplier', component: SuppliersComponent },
       { path: 'customer', component: Customer},
       { path: 'product', component: Product},
 
