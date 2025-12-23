@@ -1,6 +1,5 @@
 
 import { Routes } from '@angular/router';
-
 import { OrderPos } from './page/order-pos/order-pos';
 import { Login } from './login/login';
 import { MainLayout } from './shared/layout/main-layout/main-layout';
@@ -17,6 +16,7 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       { path: 'order-pos', component: OrderPos },
+      { path: 'supplier', component: SupplierComponent },
       { path: 'customer', component: Customer},
       { path: 'product', component: Product},
 
