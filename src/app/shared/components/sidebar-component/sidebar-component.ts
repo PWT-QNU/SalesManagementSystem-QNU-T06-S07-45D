@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -9,4 +9,23 @@ import { RouterModule } from '@angular/router';
   templateUrl: './sidebar-component.html',
   styleUrls: ['./sidebar-component.css']
 })
-export class SidebarComponent {}
+export class SidebarComponent implements OnInit {
+
+  isAdmin: boolean = false; // Biến để check quyền
+
+  ngOnInit(): void {
+    this.checkUserRole();
+  }
+
+  checkUserRole() {
+    const role = localStorage.getItem('role'); // lấy role từ local
+
+    // Kiểm tra xem có phải admin không
+    // Lưu ý: So sánh chuỗi phải khớp với ENUM trong Database ('admin')
+    if (role === 'admin') {
+      this.isAdmin = true;
+    } else {
+      this.isAdmin = false;
+    }
+  }
+}
