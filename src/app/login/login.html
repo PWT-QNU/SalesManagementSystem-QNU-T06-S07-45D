@@ -1,0 +1,48 @@
+<div class="login-wrapper">
+  
+  <div class="login-card fade-in">
+    <div class="login-header">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+      </div>
+      <h2>Đăng nhập</h2>
+      <p>Chào mừng quay trở lại hệ thống quản lý bán hàng!</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="input-group">
+        <label>Tài khoản</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          <input type="text" formControlName="username" placeholder="Nhập username..." 
+                 [class.invalid]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Mật khẩu</label>
+        <div class="input-wrapper">
+          <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <input type="password" formControlName="password" placeholder="Nhập mật khẩu..."
+                 [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid" class="btn-submit">
+        Đăng nhập ngay
+      </button>
+
+    </form>
+
+    <div class="login-footer">
+      <span>Chưa có tài khoản? </span>
+      <a routerLink="/register">Đăng ký mới</a>
+    </div>
+  </div>
+</div>

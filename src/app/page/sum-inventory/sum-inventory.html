@@ -1,0 +1,79 @@
+<!-- HEADER + BUTTON -->
+<div class="d-flex align-items-center justify-content-between p-2" style="background:#e5e5e5;">
+
+  <div class="d-flex align-items-center gap-2 " style="background:#e5e5e5;">
+     <h2>Thống kê tồn kho</h2>
+  </div>
+  <div class="d-flex gap-2">
+  <button class="btn btn-success" (click)="goToInventory()">Danh sách nhập kho</button>
+  <button class="btn btn-success" (click)="openPopup()">Nhập kho</button>
+</div>
+
+</div>
+<div class="d-flex gap-2 p-2">
+
+  <input type="text" class="form-control"
+         placeholder="Tìm kiếm sản phẩm"
+         [(ngModel)]="searchText"
+         style="width: 40vh;">
+
+  <button class="btn btn-primary" (click)="search()">Tìm kiếm</button>
+  <button class="btn btn-secondary" (click)="resetSearch()">Reset</button>
+
+</div>
+
+<!-- TABLE SUM -->
+<div class="container" style="max-height: 75vh; overflow-y: auto;">
+  <table class="table table-bordered table-striped mt-3">
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên sản phẩm</th>
+        <th>Loại sản phẩm</th>
+        <th>Tổng số lượng nhập</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of filteredImports; let i = index">
+        <td>{{ i+1 }}</td>
+        <td>{{ item.productName }}</td>
+        <td>{{ item.category }}</td>
+        <td>{{ item.totalQuantity }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="popup-overlay" *ngIf="showPopup" (click)="closePopup()">
+  <!-- stopPropagation để click trong popup không đóng -->
+  <div class="popup-content" (click)="$event.stopPropagation()">
+    <h3>Nhập kho</h3>
+    <label>Sản phẩm</label>
+      <select class="form-select mb-3" [(ngModel)]="selectedProductId">
+        <option [value]="null" disabled selected>-- chọn sản phẩm --</option>
+        <option *ngFor="let p of products" [value]="p.id">{{ p.name }}</option>
+      </select>
+       <div class="mb-3">
+      <label class="form-label">Số lượng nhập</label>
+      <input type="number" class="form-control" [(ngModel)]="quantity" placeholder="Nhập số lượng">
+    </div>
+
+    <!-- Giá nhập -->
+    <div class="mb-3">
+      <label class="form-label">Giá nhập</label>
+      <input type="number" class="form-control" [(ngModel)]="priceImport" placeholder="Nhập giá nhập">
+    </div>
+
+    <label>Nhà cung cấp</label>
+      <select class="form-select mb-3" [(ngModel)]="selectedSuppliersId">
+        <option [value]="null" disabled selected>-- chọn nhà cung cấp --</option>
+        <option *ngFor="let s of suppliers" [value]="s.id">{{ s.name }}</option>
+      </select>
+
+    <div class="action">
+      <button (click)="closePopup()" class="btn btn-danger">Đóng</button>
+      <button (click)="submitImport()" class="btn btn-primary me-2">Xác nhận</button>
+    </div>
+
+  </div>
+</div>

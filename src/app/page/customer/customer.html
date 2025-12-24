@@ -1,0 +1,113 @@
+<div class="customer-page">
+  
+  <div class="page-header">
+    <div class="header-left">
+      <h2>Quản lý khách hàng</h2>
+      <p class="subtitle">Danh sách thông tin khách hàng thân thiết</p>
+    </div>
+
+    <div class="header-right">
+      <div class="search-box">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" [(ngModel)]="searchKeyword" (ngModelChange)="search()" placeholder="Tìm tên, email, sđt..." />
+      </div>
+
+      <button class="btn btn-primary" (click)="openForm()">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        <span>Thêm mới</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-container fade-in">
+    <table class="modern-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">#</th>
+          <th>Khách hàng</th>
+          <th>Liên hệ</th>
+          <th>Ngày tạo</th> <th style="text-align: center;">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of customers; let i = index">
+          <td>{{ i + 1 }}</td>
+          
+          <td>
+            <div class="user-cell">
+              <div class="avatar-circle">{{ c.name | slice:0:1 }}</div>
+              <div class="user-info">
+                <span class="name">{{ c.name }}</span>
+                <span class="sub-text">ID: {{ c.id }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <div class="contact-cell">
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                {{ c.email }}
+              </div>
+              <div class="contact-item">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                {{ c.phone }}
+              </div>
+            </div>
+          </td>
+
+          <td>20/10/2025</td> <td class="actions-cell">
+            <button class="icon-btn edit" (click)="openForm(c)" title="Sửa">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="icon-btn delete" (click)="deleteCustomer(c.id)" title="Xóa">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="customers.length === 0">
+          <td colspan="5" class="empty-state">
+            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No data" width="60">
+            <p>Không tìm thấy khách hàng nào</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeForm()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      
+      <div class="modal-header">
+        <h3>{{ isEditing ? 'Cập nhật thông tin' : 'Thêm khách hàng mới' }}</h3>
+        <button class="close-btn" (click)="closeForm()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tên khách hàng</label>
+          <input type="text" [(ngModel)]="currentCustomer.name" placeholder="Nhập tên..." />
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="currentCustomer.email" placeholder="example@gmail.com" />
+        </div>
+
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="text" [(ngModel)]="currentCustomer.phone" placeholder="09xxxxxxx" />
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeForm()">Hủy</button>
+        <button class="btn btn-primary" (click)="saveCustomer()">
+          {{ isEditing ? 'Lưu thay đổi' : 'Tạo mới' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
