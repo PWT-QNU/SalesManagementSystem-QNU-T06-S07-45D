@@ -11,6 +11,7 @@ import { Inventory } from './page/inventory/inventory';
 import { SumInventoryComponent } from './page/sum-inventory/sum-inventory';
 import { WarehouseComponent } from './page/warehouse/warehouse';
 import { SuppliersComponent } from './page/suppliers/suppliers';
+import { RolesComponent } from './page/roles/roles';
 export const routes: Routes = [
   {
     path: '',
@@ -24,7 +25,9 @@ export const routes: Routes = [
       { path: 'sumInventory', component: SumInventoryComponent },
       { path: 'inventory', component: Inventory},
 
-      { path: 'warehouse', component: WarehouseComponent}
+      { path: 'warehouse', component: WarehouseComponent},
+
+      { path: 'roles', component: RolesComponent}
 
     ]
   },
