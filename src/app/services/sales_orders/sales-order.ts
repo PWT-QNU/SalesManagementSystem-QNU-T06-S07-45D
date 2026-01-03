@@ -22,4 +22,9 @@ export class SalesOrderService {
   createOrder(orderData: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, orderData, this.authHeader());
   }
+
+  // Hàm lấy danh sách tất cả đơn hàng
+  getAll(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl, this.authHeader());
+  }
 }
