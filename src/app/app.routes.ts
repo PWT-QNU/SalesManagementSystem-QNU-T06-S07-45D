@@ -14,6 +14,7 @@ import { SuppliersComponent } from './page/suppliers/suppliers';
 import { RolesComponent } from './page/roles/roles';
 import { adminGuard } from './guard/auth-guard';
 import { CreateOrderComponent } from './page/create-order/create-order';
+import { DashboardComponent } from './page/dashboard/dashboard';
 
 export const routes: Routes = [
   {
@@ -30,6 +31,8 @@ export const routes: Routes = [
 
       { path: 'warehouse', component: WarehouseComponent},
       {path: 'create-order', component: CreateOrderComponent},
+
+      { path: 'dashboard', component: DashboardComponent},
 
       { path: 'roles', component: RolesComponent, canActivate: [adminGuard]}
 
