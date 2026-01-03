@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common'; // Bao gồm NgFor, NgClass, DatePipe...
 import { FormsModule } from '@angular/forms';
 import { Services } from '../../services';
+import { RouterLink, RouterModule } from '@angular/router';
 
 // --- INTERFACES ---
 export interface OrderItem {
@@ -23,7 +24,7 @@ export interface Order {
 @Component({
   selector: 'app-order-pos',
   standalone: true,
-  imports: [CommonModule, FormsModule], // HttpClientModule thường import ở app.config hoặc main.ts
+  imports: [CommonModule, FormsModule, RouterLink], // HttpClientModule thường import ở app.config hoặc main.ts
   templateUrl: './order-pos.html',
   styleUrls: ['./order-pos.css']
 })

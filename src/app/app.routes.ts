@@ -13,6 +13,8 @@ import { WarehouseComponent } from './page/warehouse/warehouse';
 import { SuppliersComponent } from './page/suppliers/suppliers';
 import { RolesComponent } from './page/roles/roles';
 import { adminGuard } from './guard/auth-guard';
+import { CreateOrderComponent } from './page/create-order/create-order';
+
 export const routes: Routes = [
   {
     path: '',
@@ -27,6 +29,7 @@ export const routes: Routes = [
       { path: 'inventory', component: Inventory},
 
       { path: 'warehouse', component: WarehouseComponent},
+      {path: 'create-order', component: CreateOrderComponent},
 
       { path: 'roles', component: RolesComponent, canActivate: [adminGuard]}
 
