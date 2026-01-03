@@ -10,20 +10,31 @@ import { Product } from './page/product/product';
 import { Inventory } from './page/inventory/inventory';
 import { SumInventoryComponent } from './page/sum-inventory/sum-inventory';
 import { WarehouseComponent } from './page/warehouse/warehouse';
+import { SuppliersComponent } from './page/suppliers/suppliers';
+import { RolesComponent } from './page/roles/roles';
+import { adminGuard } from './guard/auth-guard';
+import { CreateOrderComponent } from './page/create-order/create-order';
+import { DashboardComponent } from './page/dashboard/dashboard';
+
 export const routes: Routes = [
   {
     path: '',
     component: MainLayout,
     children: [
       { path: 'order-pos', component: OrderPos },
-      { path: 'supplier', component: SupplierComponent },
+      { path: 'supplier', component: SuppliersComponent },
       { path: 'customer', component: Customer},
       { path: 'product', component: Product},
 
       { path: 'sumInventory', component: SumInventoryComponent },
       { path: 'inventory', component: Inventory},
 
-      { path: 'warehouse', component: WarehouseComponent}
+      { path: 'warehouse', component: WarehouseComponent},
+      {path: 'create-order', component: CreateOrderComponent},
+
+      { path: 'dashboard', component: DashboardComponent},
+
+      { path: 'roles', component: RolesComponent, canActivate: [adminGuard]}
 
     ]
   },

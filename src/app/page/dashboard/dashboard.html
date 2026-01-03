@@ -1,0 +1,56 @@
+<div class="dashboard-wrapper">
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-title">Doanh thu</div>
+        <div class="card-value">{{ kpis.revenue | number:'1.0-0' }}đ</div>
+        <div class="card-status up">
+          <span><i class="fas fa-arrow-up"></i> Tăng trưởng</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Đơn hàng</div>
+        <div class="card-value text-blue">{{ kpis.orders }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Khách hàng</div>
+        <div class="card-value text-blue">{{ kpis.customers | number:'1.0-0' }}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Sản phẩm tồn</div>
+        <div class="card-value text-red">{{ kpis.stock }}</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      
+      <div class="chart-card large">
+        <h3>Biểu đồ doanh thu</h3>
+        <div class="chart-wrapper">
+           <canvas baseChart
+              [data]="lineChartData"
+              [options]="lineChartOptions"
+              [type]="'line'">
+            </canvas>
+        </div>
+      </div>
+
+      <div class="chart-card small">
+        <h3>Tỷ lệ chuyển đổi</h3>
+        <div class="doughnut-wrapper">
+            <canvas baseChart
+              [data]="doughnutChartData"
+              [options]="doughnutChartOptions"
+              [type]="'doughnut'">
+            </canvas>
+            <div class="center-text">
+          {{ conversionRate | number:'1.0-1' }}%
+      </div>
+        </div>
+      </div>
+
+    </div>
+
+</div>

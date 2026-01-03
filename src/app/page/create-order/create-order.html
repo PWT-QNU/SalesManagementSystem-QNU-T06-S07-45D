@@ -1,0 +1,118 @@
+<div class="pos-container">
+  
+  <div class="left-panel">
+    <div class="bill-header">
+      <h1>SALE PRO</h1>
+      <div class="time-info">{{ currentTime | date:'HH:mm:ss dd/MM/yyyy' }}</div>
+      <div class="customer-info">
+        Khách: 
+        <ng-container *ngFor="let c of customers">
+            <strong *ngIf="c.id == selectedCustomerId">{{ c.name }}</strong>
+        </ng-container>
+        <span *ngIf="!selectedCustomerId">--- Chọn khách ---</span>
+      </div>
+    </div>
+
+    <div class="cart-scroll-area">
+      <div class="cart-item" *ngFor="let item of cart; let i = index">
+        <div class="item-info-col">
+          <div class="item-name">{{ item.product.name }}</div>
+          <div class="item-price-single">{{ item.price | number }} đ</div>
+        </div>
+        
+        <div class="item-qty-col">
+          <button class="btn-qty" (click)="updateQuantity(item, -1)">-</button>
+          <span class="qty-val">{{ item.quantity }}</span>
+          <button class="btn-qty" (click)="updateQuantity(item, 1)">+</button>
+        </div>
+
+        <div class="item-total-col">
+          {{ item.quantity * item.price | number }}
+        </div>
+        
+        <button class="btn-remove" (click)="removeFromCart(i)">×</button>
+      </div>
+
+      <div *ngIf="cart.length === 0" class="empty-cart">
+        <p>Giỏ hàng trống</p>
+      </div>
+    </div>
+
+    <div class="bill-footer">
+      <div class="total-row" style="font-size: 16px; margin-bottom: 5px;">
+        <span>Số lượng SP:</span>
+        <strong>{{ totalItems }}</strong>
+      </div>
+      <div class="total-row">
+        <span>TỔNG CỘNG:</span>
+        <span class="total-price">{{ totalAmount | number }} đ</span>
+      </div>
+      
+      <div class="action-buttons">
+        <button class="btn-pay" (click)="submitOrder()" [disabled]="cart.length === 0">
+          THANH TOÁN
+        </button>
+        <button class="btn-cancel" (click)="cancel()">HỦY</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>Khách hàng</label>
+        <select [(ngModel)]="selectedCustomerId" class="form-control">
+          <option *ngFor="let c of customers" [value]="c.id">{{ c.name }}</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Thanh toán</label>
+        <select [(ngModel)]="selectedPaymentMethod" class="form-control">
+          <option value="cash">Tiền mặt</option>
+          <option value="transfer">Chuyển khoản</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="search-bar-wrapper">
+      <input type="text" placeholder="Tìm sản phẩm..." [(ngModel)]="searchKeyword" (keyup)="onSearch()">
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="product-list-wrapper">
+      <div class="table-header">
+        <span class="th-name">Sản phẩm</span>
+        <span class="th-cat">Danh mục</span>
+        <span class="th-stock">Tồn</span>
+        <span class="th-price">Giá</span>
+        <span class="th-add"></span>
+      </div>
+      
+      <div class="product-scroll-area">
+        <div class="product-row" 
+             *ngFor="let p of filteredProducts" 
+             (click)="addToCart(p)"
+             [ngClass]="{'row-disabled': p.stockQuantity <= 0}">
+          
+          <div class="td-name">
+            {{ p.name }}
+            <span *ngIf="p.stockQuantity <= 0" class="badge-out">Hết</span>
+          </div>
+          <div class="td-cat">{{ p.category?.name }}</div>
+          
+          <div class="td-stock" [style.color]="p.stockQuantity < 5 ? 'red' : 'green'">
+            <strong>{{ p.stockQuantity }}</strong>
+          </div>
+          
+          <div class="td-price">{{ p.price | number }}</div>
+          
+          <div class="td-add">
+            <button class="btn-add-mini" [disabled]="p.stockQuantity <= 0">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
