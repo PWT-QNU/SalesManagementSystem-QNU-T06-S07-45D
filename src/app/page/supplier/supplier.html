@@ -1,0 +1,82 @@
+<!-- Removed diff -->
+
+<div class="container">
+  <h2>Quản lý nhà cung cấp</h2>
+
+  <!-- Nút mở cửa sổ -->
+  <button (click)="openModal()">Thêm nhà cung cấp</button>
+
+  <!-- Popup Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+
+      <h3>Thêm nhà cung cấp</h3>
+
+      <form #supplierForm="ngForm" (ngSubmit)="addSupplier(supplierForm)">
+        <div>
+          <label>Tên:</label>
+          <input type="text" name="name" [(ngModel)]="newSupplier.name" required />
+        </div>
+
+        <div>
+          <label>Email:</label>
+          <input type="email" name="email" [(ngModel)]="newSupplier.email" />
+        </div>
+
+        <div>
+          <label>SĐT:</label>
+          <input type="text" name="phone" [(ngModel)]="newSupplier.phone" />
+        </div>
+
+        <div>
+          <label>Địa chỉ:</label>
+          <input type="text" name="address" [(ngModel)]="newSupplier.address" />
+        </div>
+
+        <div class="button-group">
+          <button type="submit">Lưu</button>
+          <button type="button" (click)="closeModal()">Đóng</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- Thanh tìm kiếm -->
+  <div style="margin: 15px 0;">
+    <input 
+      type="text" 
+      placeholder="Tìm kiếm theo tên, email hoặc SĐT..."
+      [(ngModel)]="searchText"
+      (input)="filterSuppliers()"
+      style="width: 300px; padding: 6px;"
+    />
+  </div>
+
+
+  <!-- Danh sách nhà cung cấp -->
+  <table border="1" cellpadding="5" cellspacing="0" style="margin-top:20px; width:100%;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tên</th>
+        <th>Email</th>
+        <th>Điện thoại</th>
+        <th>Địa chỉ</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let supplier of filteredSuppliers">
+        <td>{{ supplier.id }}</td>
+        <td>{{ supplier.name }}</td>
+        <td>{{ supplier.email }}</td>
+        <td>{{ supplier.phone }}</td>
+        <td>{{ supplier.address }}</td>
+        <td>
+          <button (click)="deleteSupplier(supplier.id!)">Xóa</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

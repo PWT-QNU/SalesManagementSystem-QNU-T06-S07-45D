@@ -40,6 +40,9 @@ export class Login {
           // Decode payload từ JWT để lấy username, fullName, role
           try {
             const payload = JSON.parse(atob(token.split('.')[1]));
+
+            console.log('Thông tin Token giải mã:', payload);
+
             localStorage.setItem('username', payload.sub || '');
             localStorage.setItem('fullName', payload.fullName || '');
             localStorage.setItem('role', payload.role || '');

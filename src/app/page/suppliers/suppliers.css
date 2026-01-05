@@ -1,0 +1,92 @@
+:host {
+  --primary: #7072f8;
+  --bg-page: #f8f9fa;
+  --surface: #ffffff;
+  --text-main: #333;
+  --border: #e5e7eb;
+  
+  display: block;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg-page);
+  min-height: 100vh;
+}
+
+.supplier-page { padding: 30px; max-width: 1200px; margin: 0 auto; }
+
+/* HEADER */
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+.header-left h2 { margin: 0; font-size: 24px; color: var(--text-main); }
+.subtitle { margin: 5px 0 0; color: #666; font-size: 14px; }
+
+.header-right { display: flex; gap: 10px; }
+.search-box { position: relative; }
+.search-box input {
+  padding: 10px 15px 10px 40px; border: 1px solid var(--border); border-radius: 8px; width: 250px; outline: none;
+}
+.search-box input:focus { border-color: var(--primary); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999; width: 18px; }
+
+/* BUTTONS */
+.btn { padding: 10px 20px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-secondary { background: #eee; color: #333; }
+.btn:hover { opacity: 0.9; }
+
+/* TABLE */
+.table-container {
+  background: var(--surface); border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden; border: 1px solid var(--border);
+}
+.modern-table { width: 100%; border-collapse: collapse; }
+.modern-table th {
+  background: #f9fafb; padding: 15px; text-align: left; font-size: 13px; color: #666; border-bottom: 1px solid var(--border);
+}
+.modern-table td { padding: 12px 15px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+
+/* Supplier Info */
+.supplier-info { display: flex; align-items: center; gap: 12px; }
+.supplier-icon {
+  width: 40px; height: 40px; background: #e0e7ff; color: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;
+}
+.supplier-text { display: flex; flex-direction: column; }
+.supplier-text .name { font-weight: 600; color: var(--text-main); }
+.supplier-text .id { font-size: 11px; color: #888; }
+
+/* Contact Info */
+.contact-info { display: flex; flex-direction: column; gap: 4px; }
+.contact-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #555; }
+.contact-item svg { color: #888; }
+
+.address-text { font-size: 13px; color: #555; max-width: 250px; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Actions */
+.actions-cell { text-align: center; }
+.btn-icon {
+  width: 32px; height: 32px; border-radius: 6px; border: 1px solid #ddd; background: white; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; margin: 0 4px; color: #666;
+}
+.btn-icon.edit:hover { border-color: var(--primary); color: var(--primary); }
+.btn-icon.delete:hover { border-color: #ef4444; color: #ef4444; }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.2s;
+}
+.modal-card {
+  background: white; width: 500px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 25px rgba(0,0,0,0.1); animation: slideUp 0.3s;
+}
+.modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { margin: 0; font-size: 18px; }
+.close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
+
+.modal-body { padding: 20px; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+.required { color: red; }
+.form-control { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
+.form-row { display: flex; gap: 15px; }
+.half { flex: 1; }
+
+.modal-footer { padding: 15px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: #f9fafb; }
+.empty-state { text-align: center; padding: 30px; color: #888; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }

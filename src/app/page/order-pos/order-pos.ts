@@ -1,40 +1,42 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule, NgFor, NgClass, CurrencyPipe, TitleCasePipe } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common'; // Bao gồm NgFor, NgClass, DatePipe...
 import { FormsModule } from '@angular/forms';
 import { Services } from '../../services';
+import { RouterLink, RouterModule } from '@angular/router';
 
-interface Order {
+// --- INTERFACES ---
+export interface OrderItem {
+  product: { name: string; category: { name: string }; price: number };
+  quantity: number;
+}
+
+export interface Order {
   id: number;
   customer: { id: number; name: string; phone?: string };
   totalAmount: number;
-  status: string;
+  status: string; // 'pending' | 'completed' | 'cancelled'
   items: OrderItem[];
   orderDate: string;
-}
-interface OrderItem {
-  product: { name: string; category: { name: string }; price: number};
-  quantity: number;
-  unitPrice: number;
-
+  paymentMethod?: string;
 }
 
-interface OrderDetail extends Order {
-  items: OrderItem[];
-}
 @Component({
   selector: 'app-order-pos',
   standalone: true,
-  imports: [CommonModule, NgFor, NgClass, CurrencyPipe, TitleCasePipe, HttpClientModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink], // HttpClientModule thường import ở app.config hoặc main.ts
   templateUrl: './order-pos.html',
   styleUrls: ['./order-pos.css']
 })
 export class OrderPos implements OnInit {
   orders: Order[] = [];
   filteredOrders: Order[] = [];
-  selectedOrder: Order | null = null;
+  searchTerm: string = '';
+  
+  // Modal Variables
+  selectedOrder: Order | null = null;       // Cho modal thanh toán
+  selectedDetailOrder: Order | null = null; // Cho modal chi tiết
   selectedPaymentMethod: string = 'cash';
-  public searchTerm: string = ''; // Từ khóa tìm kiếm
 
   constructor(private services: Services, private http: HttpClient) {}
 
@@ -42,33 +44,34 @@ export class OrderPos implements OnInit {
     this.loadOrders();
   }
 
-  // Load danh sách đơn hàng
+  // ================== DATA LOADING ==================
   loadOrders() {
-  const token = localStorage.getItem('jwt');
-  this.http.get<Order[]>(`${this.services.apiUrl}/api/orders`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).subscribe({
-    next: (data) => {
-      // Tính tổngAmount từ items
-      this.orders = data.map(order => ({
-        ...order,
-        totalAmount: order.items
-          ? order.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0)
-          : 0
-      }));
+    const token = localStorage.getItem('jwt');
+    this.http.get<Order[]>(`${this.services.apiUrl}/api/orders`, {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (data) => {
+        // Tính toán lại totalAmount cho chắc chắn (nếu backend chưa tính)
+        this.orders = data.map(order => ({
+          ...order,
+          totalAmount: (order.items || []).reduce((sum, item) => sum + (item.quantity * item.product.price), 0)
+        }));
+        
+        // Sắp xếp đơn mới nhất lên đầu
+        this.orders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
 
-      this.filteredOrders = [...this.orders];
-      this.applyFilter();
-    },
-    error: (err) => console.error('Error fetching orders', err)
-  });
-}
+        this.filteredOrders = [...this.orders];
+        this.applyFilter();
+      },
+      error: (err) => console.error('Error fetching orders:', err)
+    });
+  }
 
+  // ================== SEARCH & FILTER ==================
   search() {
     this.applyFilter();
   }
 
-  // Lọc đơn hàng
   private applyFilter() {
     const term = this.searchTerm.trim().toLowerCase();
     if (!term) {
@@ -81,18 +84,26 @@ export class OrderPos implements OnInit {
     }
   }
 
-  // Mở modal thanh toán
-  openPaymentModal(order: Order) {
-    this.selectedOrder = order;
-    this.selectedPaymentMethod = 'cash';
+  // Helper cho CSS Class của trạng thái
+  getStatusClass(status: string): string {
+    switch(status.toLowerCase()) {
+      case 'completed': return 'completed';
+      case 'cancelled': return 'cancelled';
+      case 'pending': return 'pending';
+      default: return '';
+    }
   }
 
-  // Đóng modal
+  // ================== PAYMENT MODAL ==================
+  openPaymentModal(order: Order) {
+    this.selectedOrder = order;
+    this.selectedPaymentMethod = 'cash'; // Reset về mặc định
+  }
+
   closeModal() {
     this.selectedOrder = null;
   }
 
-  // Xác nhận thanh toán
   confirmPayment() {
     if (!this.selectedOrder) return;
 
@@ -105,43 +116,26 @@ export class OrderPos implements OnInit {
 
     this.http.post(apiUrl, null, {
       headers: { Authorization: `Bearer ${token}` },
-      params
+      params: params as any
     }).subscribe({
       next: () => {
-        alert('Thanh toán thành công!');
+        // alert('Thanh toán thành công!'); // Có thể bỏ alert nếu thích UX mượt
         this.closeModal();
-        this.loadOrders();
+        this.loadOrders(); // Tải lại để cập nhật trạng thái
       },
       error: (err) => {
         console.error(err);
-        alert('Thanh toán thất bại!');
+        alert('Lỗi thanh toán. Vui lòng thử lại.');
       }
     });
   }
-  selectedDetailOrder: OrderDetail | null = null;
-  purchasedItems: OrderItem[] = []; // sản phẩm đã mua
 
+  // ================== DETAIL MODAL ==================
   openDetailModal(order: Order) {
-  // Nếu order chưa có items, gán rỗng
-  this.selectedDetailOrder = {
-    ...order,
-    items: (order as any).items || []
-  };
-
-  // Tính tổng tiền dựa trên price, quantity
-  this.selectedDetailOrder.totalAmount = this.selectedDetailOrder.items
-    .reduce((sum, item) => sum + item.quantity * item.product.price, 0);
-
-  // Tổng hợp tất cả sản phẩm đã mua của khách hàng
-  this.purchasedItems = this.orders
-    .filter(o => o.customer.name === order.customer.name)
-    .flatMap(o => (o as any).items || []);
-}
-
-
+    this.selectedDetailOrder = order;
+  }
 
   closeDetailModal() {
     this.selectedDetailOrder = null;
-    this.purchasedItems = [];
   }
 }

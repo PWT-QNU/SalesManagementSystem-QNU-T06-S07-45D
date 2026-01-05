@@ -1,85 +1,122 @@
-<div class="product-page">
-    
-  <div class="top-actions">
-
-  <input class="search-input"
-         type="text"
-         placeholder="Tìm sản phẩm..."
-         [(ngModel)]="searchKeyword"
-         (input)="onSearch()" />
-
-  <button class="btn green" (click)="openCreateCategory()">Thêm danh mục</button>
-  <button class="btn red" (click)="openCreateProduct()">Thêm sản phẩm</button>
-  <button class="btn dark" *ngIf="showProductList" (click)="backToCategories()">Trở lại</button>
-
-</div>
-
-
+<div class="product-page-container">
   
-  <!-- CATEGORY LIST -->
-  <div class="category-tabs" *ngIf="!showProductList">
-    <div *ngFor="let cat of categories" class="tab" (click)="openProducts(cat)">
-      {{ cat.name }}
-      <button (click)="openEditCategory(cat); $event.stopPropagation()">✏</button>
-      <button (click)="deleteCategory(cat.id); $event.stopPropagation()">🗑</button>
+  <div class="header-section">
+    <div class="search-wrapper">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" 
+             placeholder="Tìm kiếm sản phẩm..." 
+             [(ngModel)]="searchKeyword" 
+             (input)="onSearch()" />
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn-secondary" *ngIf="showProductList" (click)="backToCategories()">
+        ← Trở lại
+      </button>
+      <button class="btn btn-primary" (click)="openCreateCategory()">
+        + Danh mục
+      </button>
+      <button class="btn btn-primary" (click)="openCreateProduct()">
+        + Sản phẩm
+      </button>
     </div>
   </div>
 
-  <!-- PRODUCT LIST -->
-  <div class="category-tabs" *ngIf="showProductList">
-    <div class="tab title">{{ selectedCategoryName }}</div>
+  <div class="section-title" *ngIf="showProductList">
+    <h2>Danh mục: <span>{{ selectedCategoryName }}</span></h2>
   </div>
 
-  <div class="category-tabs product-items" *ngIf="showProductList">
-    <div *ngFor="let p of filteredProducts" class="tab product-box">
-      {{ p.name }}
-      <button (click)="openEditProduct(p)">✏</button>
-      <button (click)="deleteProduct(p.id)">🗑</button>
+  <div class="grid-container" *ngIf="!showProductList">
+    <div *ngFor="let cat of categories" class="card category-card" (click)="openProducts(cat)">
+      <div class="card-icon">📁</div>
+      <div class="card-info">
+        <h3>{{ cat.name }}</h3>
+        <span class="subtitle">Nhấn để xem sản phẩm</span>
+      </div>
+      <div class="card-actions">
+        <button class="icon-btn edit" (click)="openEditCategory(cat); $event.stopPropagation()" title="Sửa">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button class="icon-btn delete" (click)="deleteCategory(cat.id); $event.stopPropagation()" title="Xóa">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- POPUP PRODUCT -->
-  <div class="modal" *ngIf="showProductForm">
-    <div class="modal-box">
-      <h2>{{ isEditingProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm' }}</h2>
+  <div class="list-container" *ngIf="showProductList">
+    <div *ngFor="let p of filteredProducts" class="product-row">
+      <div class="product-info">
+        <div class="product-name">{{ p.name }}</div>
+        <div class="product-meta">
+          <span class="badge price">{{ p.price | currency:'VND' }}</span>
+          <span class="badge stock">Kho: {{ p.stock }}</span>
+        </div>
+      </div>
+      
+      <div class="row-actions">
+        <button class="icon-btn edit" (click)="openEditProduct(p)">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button class="icon-btn delete" (click)="deleteProduct(p.id)">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="filteredProducts.length === 0" class="empty-state">
+      Chưa có sản phẩm nào trong danh mục này.
+    </div>
+  </div>
 
-      <form (ngSubmit)="submitProduct()">
+  <div class="modal-overlay" *ngIf="showProductForm || showCategoryForm">
+    <div class="modal-content fade-in-up">
+      <div class="modal-header">
+        <h3>
+          {{ showProductForm ? (isEditingProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới') 
+                             : (isEditingCategory ? 'Chỉnh sửa danh mục' : 'Thêm danh mục mới') }}
+        </h3>
+        <button class="close-btn" (click)="showProductForm ? closeProductForm() : closeCategoryForm()">×</button>
+      </div>
 
-        <label>Tên:</label>
-        <input type="text" [(ngModel)]="productForm.name" name="name" required />
-
-        <label>Giá:</label>
-        <input type="number" [(ngModel)]="productForm.price" name="price" required />
-
-        <label>Số lượng:</label>
-        <input type="number" [(ngModel)]="productForm.stock" name="quantity" required />
-
-        <label>Danh mục:</label>
-        <select [(ngModel)]="productForm.categoryId" name="categoryId" required>
-          <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
-        </select>
-
-        <button class="btn green full" type="submit">{{ isEditingProduct ? 'Cập nhật' : 'Tạo' }}</button>
-        <button class="btn red full" type="button" (click)="closeProductForm()">Hủy</button>
-
+      <form *ngIf="showProductForm" (ngSubmit)="submitProduct()" class="modal-form">
+        <div class="form-group">
+          <label>Tên sản phẩm</label>
+          <input type="text" [(ngModel)]="productForm.name" name="name" required placeholder="Nhập tên..." />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Giá</label>
+            <input type="number" [(ngModel)]="productForm.price" name="price" required />
+          </div>
+          <div class="form-group">
+            <label>Số lượng</label>
+            <input type="number" [(ngModel)]="productForm.stock" name="quantity" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Danh mục</label>
+          <select [(ngModel)]="productForm.categoryId" name="categoryId" required>
+            <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-text" type="button" (click)="closeProductForm()">Hủy bỏ</button>
+          <button class="btn btn-primary" type="submit">{{ isEditingProduct ? 'Cập nhật' : 'Tạo mới' }}</button>
+        </div>
       </form>
-    </div>
-  </div>
 
-  <!-- POPUP CATEGORY -->
-  <div class="modal" *ngIf="showCategoryForm">
-    <div class="modal-box">
-      <h2>{{ isEditingCategory ? 'Sửa danh mục' : 'Thêm danh mục' }}</h2>
-
-      <form (ngSubmit)="submitCategory()">
-
-        <label>Tên danh mục:</label>
-        <input type="text" [(ngModel)]="categoryForm.name" name="catName" required />
-
-        <button class="btn green full" type="submit">{{ isEditingCategory ? 'Cập nhật' : 'Tạo' }}</button>
-        <button class="btn red full" type="button" (click)="closeCategoryForm()">Hủy</button>
-
+      <form *ngIf="showCategoryForm" (ngSubmit)="submitCategory()" class="modal-form">
+        <div class="form-group">
+          <label>Tên danh mục</label>
+          <input type="text" [(ngModel)]="categoryForm.name" name="catName" required placeholder="Ví dụ: Điện tử..." />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-text" type="button" (click)="closeCategoryForm()">Hủy bỏ</button>
+          <button class="btn btn-primary" type="submit">{{ isEditingCategory ? 'Cập nhật' : 'Tạo mới' }}</button>
+        </div>
       </form>
+
     </div>
   </div>
 
