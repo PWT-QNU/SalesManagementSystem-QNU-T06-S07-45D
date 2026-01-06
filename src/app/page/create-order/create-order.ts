@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
 
 // Services
-import { ProductService } from '../../services/products/product'; // Đảm bảo đường dẫn đúng
+import { ProductService } from '../../services/products/product';
 import { SalesOrderService } from '../../services/sales_orders/sales-order';
 import { CustomerService } from '../../services/customers/customer';
 
@@ -21,6 +21,9 @@ export class CreateOrderComponent implements OnInit, OnDestroy {
   products: any[] = [];
   filteredProducts: any[] = [];
   customers: any[] = [];
+  
+  // [MỚI] Biến chứa dữ liệu in
+  invoiceData: any = null;
   
   // UI
   searchKeyword: string = '';
@@ -52,25 +55,44 @@ export class CreateOrderComponent implements OnInit, OnDestroy {
     if (this.timeInterval) clearInterval(this.timeInterval);
   }
 
+  // --- [LOGIC IN HÓA ĐƠN] ---
+  printInvoice() {
+    if (this.cart.length === 0) {
+      alert('Giỏ hàng trống, không thể in!');
+      return;
+    }
+
+    // 1. Tìm tên khách hàng
+    const customer = this.customers.find(c => c.id == this.selectedCustomerId);
+
+    // 2. Chuẩn bị dữ liệu cho mẫu in
+    this.invoiceData = {
+      orderId: 'ORD-' + Math.floor(Math.random() * 100000), // Mã giả lập hoặc lấy từ DB nếu đã lưu
+      customerName: customer ? customer.name : 'Khách lẻ',
+      date: new Date(),
+      items: [...this.cart], // Copy danh sách hàng
+      totalAmount: this.totalAmount,
+      paymentMethod: this.selectedPaymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'
+    };
+
+    // 3. Gọi lệnh in sau khi Angular render xong (100ms)
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  }
+
   // --- TẢI DỮ LIỆU ---
   loadProducts() {
     this.productService.getAll().subscribe({
       next: (data) => {
-        console.log('Dữ liệu sản phẩm từ API:', data); // <--- QUAN TRỌNG: Xem log này ở F12
-        
         // Map dữ liệu để đảm bảo field 'stockQuantity' luôn có giá trị
         this.products = data.map(p => ({
             ...p,
-            // Nếu API trả về 'quantity' hoặc 'stock', hãy sửa dòng dưới đây:
             stockQuantity: p.stockQuantity || p.quantity || p.stock || 0 
         }));
-        
         this.filteredProducts = [...this.products];
       },
-      error: (err) => {
-        console.error('Lỗi tải sản phẩm:', err);
-        // Nếu lỗi 403/401 thì do chưa đăng nhập hoặc hết hạn token
-      }
+      error: (err) => console.error('Lỗi tải sản phẩm:', err)
     });
   }
 
@@ -153,7 +175,6 @@ export class CreateOrderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 1. Tạo Payload đơn hàng
     const orderPayload = {
       customerId: this.selectedCustomerId,
       paymentMethod: this.selectedPaymentMethod,
@@ -166,10 +187,8 @@ export class CreateOrderComponent implements OnInit, OnDestroy {
       }))
     };
 
-    // 2. Gọi API tạo đơn hàng
     this.salesOrderService.createOrder(orderPayload).subscribe({
       next: (res) => {
-        // Đơn hàng tạo thành công -> Bắt đầu quy trình trừ kho và làm mới UI
         this.handleStockUpdateAndFinish();
       },
       error: (err) => {
@@ -179,51 +198,34 @@ export class CreateOrderComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Hàm xử lý update kho (Dùng forkJoin để chờ)
   handleStockUpdateAndFinish() {
     const updateTasks = this.cart.map(item => {
-      // 1. Lấy giá trị tồn kho hiện tại (thử cả 2 tên để chắc chắn lấy được số)
       const currentStock = Number(item.product.stock || item.product.stockQuantity || 0);
       const quantityToDeduct = Number(item.quantity);
-      
-      // Tính toán số tồn mới
       const newStock = currentStock - quantityToDeduct;
 
-      console.log(`Sản phẩm: ${item.product.name} | Cũ: ${currentStock} | Mới: ${newStock}`);
-
-      // 2. Tạo object update
       const updatedProduct = { 
         ...item.product, 
-        
-        // --- [QUAN TRỌNG] --- 
-        // Phải dùng key là 'stock' vì Backend Java của bạn dùng .getStock()
         stock: newStock, 
-        
-        // Cập nhật luôn cả biến này để nếu Frontend dùng nó hiển thị thì cũng đúng luôn
         stockQuantity: newStock 
       };
 
-      // Gọi API
       return this.productService.update(item.product.id, updatedProduct);
     });
 
     forkJoin(updateTasks).subscribe({
       next: (results) => {
-        console.log('Server phản hồi OK:', results); 
         alert('Thanh toán và trừ kho thành công!');
         this.cart = [];
-        
-        // setTimeout nhẹ để đảm bảo DB đã commit xong rồi mới load lại
-        setTimeout(() => {
-            this.loadProducts();
-        }, 500);
+        setTimeout(() => { this.loadProducts(); }, 500);
       },
       error: (err) => {
         console.error('Lỗi khi cập nhật kho:', err);
-        alert('Lỗi cập nhật kho! Kiểm tra Console để xem chi tiết.');
+        alert('Lỗi cập nhật kho!');
       }
     });
   }
+
   cancel() {
     if(confirm('Hủy bỏ đơn hàng hiện tại?')) {
       this.cart = [];
