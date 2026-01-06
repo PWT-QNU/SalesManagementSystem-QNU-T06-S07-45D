@@ -7,12 +7,11 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports:[FormsModule, CommonModule, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './product.html',
-  styleUrls: ['./product.css']
+  styleUrls: ['./product.css'],
 })
 export class Product implements OnInit {
-
   categories: any[] = [];
   products: any[] = [];
   filteredProducts: any[] = [];
@@ -32,21 +31,23 @@ export class Product implements OnInit {
   selectedCategoryName = '';
   selectedCategoryId: number | null = null;
 
-  productForm = {
+  productForm: {
+    name: string;
+    price: number | null; // Cho phép số hoặc null
+    stock: number | null; // Cho phép số hoặc null
+    categoryId: string;
+  } = {
     name: '',
     price: null,
     stock: null,
-    categoryId: ''
+    categoryId: '',
   };
 
   categoryForm = {
-    name: ''
+    name: '',
   };
 
-  constructor(
-    private productService: ProductService,
-    private categoryService: CategoryService
-  ) {}
+  constructor(private productService: ProductService, private categoryService: CategoryService) {}
 
   ngOnInit(): void {
     this.loadCategories();
@@ -54,36 +55,38 @@ export class Product implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getAll().subscribe(data => this.categories = data);
+    this.categoryService.getAll().subscribe((data) => (this.categories = data));
   }
 
   loadProducts() {
-    this.productService.getAll().subscribe(data => {
+    this.productService.getAll().subscribe((data) => {
       this.products = data;
       if (this.selectedCategoryId) {
-        this.filteredProducts = this.products.filter(p => p.category.id === this.selectedCategoryId);
+        this.filteredProducts = this.products.filter(
+          (p) => p.category.id === this.selectedCategoryId
+        );
       }
     });
   }
 
   onSearch() {
-  if (!this.searchKeyword.trim()) {
-    this.filteredProducts = this.products.filter(p => p.category.id === this.selectedCategoryId);
-    return;
+    if (!this.searchKeyword.trim()) {
+      this.filteredProducts = this.products.filter(
+        (p) => p.category.id === this.selectedCategoryId
+      );
+      return;
+    }
+
+    const keyword = this.searchKeyword.toLowerCase();
+    this.filteredProducts = this.products.filter((p) => p.name.toLowerCase().includes(keyword));
+
+    this.showProductList = true; // Luôn mở product list để thấy kết quả
   }
-
-  const keyword = this.searchKeyword.toLowerCase();
-  this.filteredProducts = this.products.filter(p =>
-    p.name.toLowerCase().includes(keyword)
-  );
-
-  this.showProductList = true; // Luôn mở product list để thấy kết quả
-}
 
   openProducts(cat: any) {
     this.selectedCategoryName = cat.name;
     this.selectedCategoryId = cat.id;
-    this.filteredProducts = this.products.filter(p => p.category.id === cat.id);
+    this.filteredProducts = this.products.filter((p) => p.category.id === cat.id);
     this.showProductList = true;
   }
 
@@ -107,7 +110,7 @@ export class Product implements OnInit {
       name: p.name,
       price: p.price,
       stock: p.stock,
-      categoryId: p.category.id
+      categoryId: p.category.id,
     };
   }
 
@@ -124,7 +127,7 @@ export class Product implements OnInit {
       name: this.productForm.name,
       price: this.productForm.price,
       stock: this.productForm.stock,
-      category: { id: this.productForm.categoryId }
+      category: { id: this.productForm.categoryId },
     };
 
     this.productService.create(body).subscribe(() => {
@@ -134,33 +137,39 @@ export class Product implements OnInit {
   }
 
   updateProduct() {
-  const body = {
-    name: this.productForm.name,
-    price: this.productForm.price,
-    stock: this.productForm.stock,
-    category: { id: this.productForm.categoryId }
-  };
+    const body = {
+      name: this.productForm.name,
+      price: this.productForm.price,
+      stock: this.productForm.stock,
+      category: { id: this.productForm.categoryId },
+    };
 
-  this.productService.update(this.editingProduct.id, body).subscribe({
-    next: () => {
-      this.closeProductForm();
-      this.loadProducts();               // load lại danh sách chuẩn
-      this.filteredProducts = this.filteredProducts.map(p =>
-        p.id === this.editingProduct.id
-          ? { ...p, ...body, category: { id: body.category.id, name: this.categories.find(c => c.id == body.category.id).name } }
-          : p
-      );
-    },
-    error: err => console.error("UPDATE ERROR:", err)
-  });
-}
-
+    this.productService.update(this.editingProduct.id, body).subscribe({
+      next: () => {
+        this.closeProductForm();
+        this.loadProducts(); // load lại danh sách chuẩn
+        this.filteredProducts = this.filteredProducts.map((p) =>
+          p.id === this.editingProduct.id
+            ? {
+                ...p,
+                ...body,
+                category: {
+                  id: body.category.id,
+                  name: this.categories.find((c) => c.id == body.category.id).name,
+                },
+              }
+            : p
+        );
+      },
+      error: (err) => console.error('UPDATE ERROR:', err),
+    });
+  }
 
   deleteProduct(id: number) {
-    if(confirm("Bạn chắc chắn xóa sản phẩm này?")) {
+    if (confirm('Bạn chắc chắn xóa sản phẩm này?')) {
       this.productService.delete(id).subscribe(() => {
         this.loadProducts();
-        this.filteredProducts = this.filteredProducts.filter(p => p.id !== id);
+        this.filteredProducts = this.filteredProducts.filter((p) => p.id !== id);
       });
     }
   }
@@ -194,15 +203,14 @@ export class Product implements OnInit {
   }
 
   updateCategory() {
-    this.categoryService.update(this.editingCategory.id, this.categoryForm)
-      .subscribe(() => {
-        this.closeCategoryForm();
-        this.loadCategories();
-      });
+    this.categoryService.update(this.editingCategory.id, this.categoryForm).subscribe(() => {
+      this.closeCategoryForm();
+      this.loadCategories();
+    });
   }
 
   deleteCategory(id: number) {
-    if(confirm("Bạn chắc chắn xóa danh mục này?")) {
+    if (confirm('Bạn chắc chắn xóa danh mục này?')) {
       this.categoryService.delete(id).subscribe(() => {
         this.loadCategories();
         this.showProductList = false;
@@ -217,5 +225,4 @@ export class Product implements OnInit {
   closeCategoryForm() {
     this.showCategoryForm = false;
   }
-
 }
