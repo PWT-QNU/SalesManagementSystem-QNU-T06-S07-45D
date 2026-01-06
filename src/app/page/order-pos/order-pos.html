@@ -1,5 +1,4 @@
 <div class="order-page">
-  
   <div class="page-header">
     <div class="header-left">
       <h2>Danh sách đơn hàng</h2>
@@ -7,16 +6,73 @@
     </div>
 
     <div class="header-right">
-      <button class="btn btn-primary" routerLink="/create-order" style="display: flex; align-items: center; gap: 5px; margin-right: 10px;">
-    <span>+</span> Tạo đơn hàng
-  </button>
+      <button
+        class="btn btn-primary"
+        routerLink="/create-order"
+        style="display: flex; align-items: center; gap: 5px; margin-right: 10px"
+      >
+        <span>+</span> Tạo đơn hàng
+      </button>
+      <button
+        class="btn btn-success"
+        (click)="exportToExcel()"
+        title="Xuất Excel"
+        style="background: #10b981; color: white"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        XLS
+      </button>
+
+      <button
+        class="btn btn-danger"
+        (click)="exportToPDF()"
+        title="Xuất PDF"
+        style="background: #ef4444; color: white"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="12" y1="18" x2="12" y2="12"></line>
+          <line x1="9" y1="15" x2="15" y2="15"></line>
+        </svg>
+        PDF
+      </button>
       <div class="search-box">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input 
-          type="text" 
-          [(ngModel)]="searchTerm" 
+        <svg
+          class="search-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
           (keyup.enter)="search()"
-          placeholder="Tìm tên khách hàng..." 
+          placeholder="Tìm tên khách hàng..."
         />
       </div>
       <button class="btn btn-primary" (click)="search()">Tìm kiếm</button>
@@ -27,52 +83,133 @@
     <table class="modern-table">
       <thead>
         <tr>
-          <th style="width: 50px;">STT</th>
+          <th style="width: 50px">STT</th>
           <th>Mã KH</th>
           <th>Khách hàng</th>
           <th>Ngày tạo</th>
           <th>Phương thức</th>
           <th>Tổng tiền</th>
-          <th style="text-align: center;">Trạng thái</th>
-          <th style="text-align: center;">Thao tác</th>
+          <th style="text-align: center">Trạng thái</th>
+          <th style="text-align: center">Thao tác</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let o of filteredOrders; index as i">
           <td>{{ i + 1 }}</td>
-          <td><span class="code-badge">#{{ o.customer.id }}</span></td>
-          <td style="font-weight: 600;">{{ o.customer.name }}</td>
-          <td>{{ o.orderDate ? (o.orderDate | date:'dd/MM/yyyy HH:mm') : '---' }}</td>
-          
+          <td>
+            <span class="code-badge">#{{ o.customer.id }}</span>
+          </td>
+          <td style="font-weight: 600">{{ o.customer.name }}</td>
+          <td>{{ o.orderDate ? (o.orderDate | date : 'dd/MM/yyyy HH:mm') : '---' }}</td>
+
           <td>
             <span *ngIf="o.status !== 'pending'" class="payment-method">
               {{ o.paymentMethod || 'Tiền mặt' | titlecase }}
             </span>
-            <span *ngIf="o.status === 'pending'" style="color: #999; font-style: italic;">---</span>
+            <span *ngIf="o.status === 'pending'" style="color: #999; font-style: italic">---</span>
           </td>
 
-          <td class="price-text">{{ o.totalAmount | number:'1.0-0' }} đ</td>
+          <td class="price-text">{{ o.totalAmount | number : '1.0-0' }} đ</td>
 
-          <td style="text-align: center;">
+          <td style="text-align: center">
             <span class="status-badge" [ngClass]="getStatusClass(o.status)">
               {{ o.status === 'pending' ? 'Chờ thanh toán' : (o.status | titlecase) }}
             </span>
           </td>
 
           <td class="actions-cell">
-            <button *ngIf="o.status === 'pending'" 
-                    class="btn-icon pay" 
-                    (click)="openPaymentModal(o)" 
-                    title="Thanh toán">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+            <button
+              *ngIf="o.status === 'pending'"
+              class="btn-icon pay"
+              (click)="openPaymentModal(o)"
+              title="Thanh toán"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
             </button>
 
-            <button class="btn-icon detail" 
-                    (click)="openDetailModal(o)" 
-                    title="Chi tiết">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <button class="btn-icon detail" (click)="openDetailModal(o)" title="Chi tiết">
+              <svg
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
             </button>
           </td>
+
+          <div id="invoice-template" *ngIf="invoiceData">
+            <div class="invoice-header">
+              <h2>SALE PRO STORE</h2>
+              <p>ĐC: 123 Đường ABC, Quận 1, TP.HCM</p>
+              <p>Hotline: 0909.123.456</p>
+              <hr />
+              <h3>HÓA ĐƠN BÁN LẺ</h3>
+              <p>
+                Mã đơn: <strong>#{{ invoiceData.id }}</strong>
+              </p>
+              <p>Ngày: {{ invoiceData.orderDate | date : 'dd/MM/yyyy HH:mm' }}</p>
+            </div>
+
+            <div class="invoice-info">
+              <p><strong>Khách hàng:</strong> {{ invoiceData.customer.name }}</p>
+              <p><strong>SĐT:</strong> {{ invoiceData.customer.phone || '---' }}</p>
+            </div>
+
+            <table class="invoice-table">
+              <thead>
+                <tr>
+                  <th>SP</th>
+                  <th>SL</th>
+                  <th>Đơn giá</th>
+                  <th>Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of invoiceData.items">
+                  <td>{{ item.product.name }}</td>
+                  <td style="text-align: center">{{ item.quantity }}</td>
+                  <td style="text-align: right">{{ item.product.price | number : '1.0-0' }}</td>
+                  <td style="text-align: right">
+                    {{ item.quantity * item.product.price | number : '1.0-0' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="invoice-total">
+              <hr />
+              <div class="row">
+                <span>Tổng cộng:</span>
+                <strong>{{ invoiceData.totalAmount | number : '1.0-0' }} đ</strong>
+              </div>
+              <div class="row">
+                <span>Thanh toán:</span>
+                <span>{{
+                  invoiceData.paymentMethod === 'bank_transfer' ? 'Chuyển khoản' : 'Tiền mặt'
+                }}</span>
+              </div>
+            </div>
+
+            <div class="invoice-footer">
+              <p>Cảm ơn quý khách & Hẹn gặp lại!</p>
+              <p><i>(Hóa đơn chỉ có giá trị trong ngày)</i></p>
+            </div>
+          </div>
         </tr>
 
         <tr *ngIf="filteredOrders.length === 0">
@@ -98,7 +235,7 @@
         </div>
         <div class="info-row">
           <label>Tổng tiền:</label>
-          <span class="price-highlight">{{ selectedOrder.totalAmount | number:'1.0-0' }} đ</span>
+          <span class="price-highlight">{{ selectedOrder.totalAmount | number : '1.0-0' }} đ</span>
         </div>
 
         <div class="form-group mt-3">
@@ -128,7 +265,12 @@
       <div class="modal-body">
         <div class="detail-info">
           <p><strong>Khách hàng:</strong> {{ selectedDetailOrder.customer.name }}</p>
-          <p><strong>Trạng thái:</strong> <span class="status-badge" [ngClass]="getStatusClass(selectedDetailOrder.status)">{{ selectedDetailOrder.status }}</span></p>
+          <p>
+            <strong>Trạng thái:</strong>
+            <span class="status-badge" [ngClass]="getStatusClass(selectedDetailOrder.status)">{{
+              selectedDetailOrder.status
+            }}</span>
+          </p>
         </div>
 
         <table class="detail-table">
@@ -146,16 +288,20 @@
                 <div class="prod-name">{{ item.product.name }}</div>
                 <small class="prod-cat">{{ item.product.category.name }}</small>
               </td>
-              <td>{{ item.product.price | number:'1.0-0' }}</td>
+              <td>{{ item.product.price | number : '1.0-0' }}</td>
               <td>x{{ item.quantity }}</td>
-              <td style="font-weight: bold;">{{ item.quantity * item.product.price | number:'1.0-0' }}</td>
+              <td style="font-weight: bold">
+                {{ item.quantity * item.product.price | number : '1.0-0' }}
+              </td>
             </tr>
           </tbody>
         </table>
 
         <div class="total-summary">
           <span>Tổng cộng:</span>
-          <span class="final-price">{{ selectedDetailOrder.totalAmount | number:'1.0-0' }} VND</span>
+          <span class="final-price"
+            >{{ selectedDetailOrder.totalAmount | number : '1.0-0' }} VND</span
+          >
         </div>
       </div>
 
@@ -164,5 +310,4 @@
       </div>
     </div>
   </div>
-
 </div>

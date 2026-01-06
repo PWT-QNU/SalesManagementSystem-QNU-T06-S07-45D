@@ -49,6 +49,9 @@
       </div>
       
       <div class="action-buttons">
+        <button class="btn-print" (click)="printInvoice()" [disabled]="cart.length === 0">
+          IN HÓA ĐƠN
+        </button>
         <button class="btn-pay" (click)="submitOrder()" [disabled]="cart.length === 0">
           THANH TOÁN
         </button>
@@ -58,7 +61,6 @@
   </div>
 
   <div class="right-panel">
-    
     <div class="filters-section">
       <div class="filter-group">
         <label>Khách hàng</label>
@@ -113,6 +115,67 @@
         </div>
       </div>
     </div>
-
   </div>
+</div>
+
+<div id="invoice-template" *ngIf="invoiceData">
+  
+    <div class="inv-header">
+      <h2>SALE PRO STORE</h2>
+      <p>ĐC: 123 Đường ABC, Quận 1, TP.HCM</p>
+      <p>Hotline: 0909.123.456</p>
+      
+      <div class="inv-title">HÓA ĐƠN THANH TOÁN</div>
+    </div>
+  
+    <div class="inv-info">
+      <div><strong>Mã đơn:</strong> #{{ invoiceData.orderId }}</div>
+      <div><strong>Ngày:</strong> {{ invoiceData.date | date:'dd/MM/yyyy HH:mm' }}</div>
+      <div><strong>Khách hàng:</strong> {{ invoiceData.customerName }}</div>
+      <div><strong>Thu ngân:</strong> Admin User</div>
+    </div>
+  
+    <table class="inv-table">
+      <thead>
+        <tr>
+          <th>Tên sản phẩm</th>
+          <th class="col-sl">SL</th>
+          <th class="col-gia">Đơn giá</th>
+          <th class="col-gia">Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoiceData.items">
+          <td>{{ item.product.name }}</td>
+          <td class="col-sl">{{ item.quantity }}</td>
+          <td class="col-gia">{{ item.price | number:'1.0-0' }}</td>
+          <td class="col-gia">{{ item.quantity * item.price | number:'1.0-0' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <div class="inv-total">
+      <div class="row">
+        <span>Tổng tiền hàng:</span>
+        <span>{{ invoiceData.totalAmount | number:'1.0-0' }}</span>
+      </div>
+      <div class="row">
+        <span>Chiết khấu:</span>
+        <span>0</span>
+      </div>
+      <div class="row final">
+        <span>TỔNG CỘNG:</span>
+        <span>{{ invoiceData.totalAmount | number:'1.0-0' }} đ</span>
+      </div>
+      <div class="row" style="font-size: 14px; margin-top: 5px;">
+        <span>Hình thức:</span>
+        <span>{{ invoiceData.paymentMethod }}</span>
+      </div>
+    </div>
+  
+    <div class="inv-footer">
+      <p>Cảm ơn quý khách đã mua hàng!</p>
+      <p>Hẹn gặp lại quý khách.</p>
+    </div>
+  
 </div>

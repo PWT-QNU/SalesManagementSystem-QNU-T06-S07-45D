@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common'; // Bao gồm NgFor, NgClass, Dat
 import { FormsModule } from '@angular/forms';
 import { Services } from '../../services';
 import { RouterLink, RouterModule } from '@angular/router';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // --- INTERFACES ---
 export interface OrderItem {
@@ -33,6 +36,8 @@ export class OrderPos implements OnInit {
   filteredOrders: Order[] = [];
   searchTerm: string = '';
   
+  invoiceData: Order | null = null;
+
   // Modal Variables
   selectedOrder: Order | null = null;       // Cho modal thanh toán
   selectedDetailOrder: Order | null = null; // Cho modal chi tiết
@@ -137,5 +142,75 @@ export class OrderPos implements OnInit {
 
   closeDetailModal() {
     this.selectedDetailOrder = null;
+  }
+
+  // ================== EXPORT EXCEL ==================
+  exportToExcel() {
+    // 1. Chuẩn bị dữ liệu cho Excel (làm phẳng object)
+    const dataToExport = this.filteredOrders.map((order, index) => ({
+      STT: index + 1,
+      'Mã Đơn': `#${order.id}`,
+      'Khách Hàng': order.customer.name,
+      'Ngày Tạo': new Date(order.orderDate).toLocaleDateString('vi-VN'),
+      'Phương Thức': order.paymentMethod === 'cash' ? 'Tiền mặt' : 
+                     order.paymentMethod === 'bank_transfer' ? 'Chuyển khoản' : 
+                     order.paymentMethod === 'ewallet' ? 'Ví điện tử' : '---',
+      'Tổng Tiền': order.totalAmount,
+      'Trạng Thái': order.status === 'pending' ? 'Chờ thanh toán' : 
+                    order.status === 'completed' ? 'Đã thanh toán' : 'Đã hủy'
+    }));
+
+    // 2. Tạo WorkSheet và WorkBook
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Danh sách đơn hàng');
+
+    // 3. Xuất file
+    XLSX.writeFile(wb, `DS_DonHang_${new Date().getTime()}.xlsx`);
+  }
+
+  // ================== EXPORT PDF ==================
+  exportToPDF() {
+    const doc = new jsPDF();
+
+    // Tiêu đề
+    doc.setFontSize(18);
+    doc.text('Danh Sách Đơn Hàng', 14, 20);
+    doc.setFontSize(10);
+    doc.text(`Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}`, 14, 28);
+
+    // Chuẩn bị dữ liệu bảng
+    const head = [['STT', 'Mã Đơn', 'Khách Hàng', 'Ngày Tạo', 'Tổng Tiền', 'Trạng Thái']];
+    const body = this.filteredOrders.map((order, index) => [
+      index + 1,
+      `#${order.id}`,
+      order.customer.name,
+      new Date(order.orderDate).toLocaleDateString('vi-VN'),
+      new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount),
+      order.status === 'pending' ? 'Chờ thanh toán' : 
+      order.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'
+    ]);
+
+    // Vẽ bảng
+    autoTable(doc, {
+      head: head,
+      body: body,
+      startY: 35,
+      theme: 'grid',
+      styles: { font: 'helvetica', fontSize: 9 },
+      headStyles: { fillColor: [112, 114, 248] } // Màu tím giống theme của bạn
+    });
+
+    // Xuất file
+    doc.save(`DS_DonHang_${new Date().getTime()}.pdf`);
+  }
+
+  printInvoice(order: Order) {
+    this.invoiceData = order;
+
+    // Sử dụng setTimeout để đảm bảo Angular đã render xong dữ liệu vào mẫu in thì mới gọi window.print
+    setTimeout(() => {
+      window.print();
+    }, 100);
   }
 }
